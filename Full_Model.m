@@ -14,7 +14,7 @@ function [sys_closed, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_g
 %     SpindleGains = csvread('Spindle_Gains (not symmetric).csv');
 %     SpindleGains = csvread('Spindle_Gains_Calculated.csv');
 %     SpindleGains = csvread('Spindle_Gains_Randomized.csv');
-    AffDelays = csvread('DelaysAfferent.csv');
+    AffDelays = csvread('DelaysAfferent.csv') * delay_multiplier;
     EffDelays = csvread('DelaysEfferent.csv');
     CentDelays = NaN(4);
     for i = 1:4
@@ -26,7 +26,7 @@ function [sys_closed, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_g
             end
         end
     end
-    
+    Aff_Cent_Delays = (repmat(AffDelays,1,4) + CentDelays) * delay_multiplier;
     muscle_names = {'ECR';'ECU';'FCR';'FCU'};
     joint_DOF_names = {'WFE';'WRUD'};
     
@@ -43,11 +43,11 @@ function [sys_closed, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_g
     sys_u2f_open = ss(A_u2f,B_u2f,C_u2f,D_u2f);
         sys_u2f_open.InputName = muscle_names;
         sys_u2f_open.OutputName = muscle_names;
-        sys_u2f_open.InputDelay = EffDelays*delay_multiplier;
+        sys_u2f_open.InputDelay = EffDelays;
         
     % GTO
     sys_GTO = ss(diag(GTO_gain*1.27 ./ diag(C))); %  Rozendaal (1997)
-        sys_GTO.OutputDelay = AffDelays * delay_multiplier + 0.0025; % 0.0025 s delay
+        sys_GTO.InternalDelay = Aff_Cent_Delays;
         sys_GTO.InputName = muscle_names;
         sys_GTO.OutputName = muscle_names;
     
@@ -87,8 +87,7 @@ function [sys_closed, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_g
         sys_DeltaLambda2u_fb = tf(G, 1);
             sys_DeltaLambda2u_fb.InputName = muscle_names;
             sys_DeltaLambda2u_fb.OutputName = muscle_names;
-            sys_DeltaLambda2u_fb.OutputDelay = AffDelays*delay_multiplier;
-            sys_DeltaLambda2u_fb.IODelay = CentDelays;
+            sys_DeltaLambda2u_fb.IODelay = Aff_Cent_Delays;
             
     % FULL SYSTEM
     sys_fwd = sys_tau2q * sys_f2tau * sys_u2f_closed;
