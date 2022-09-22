@@ -47,10 +47,10 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
         sys_u2f.OutputName = muscle_names;
 
     % GTO's
-    sys_GTO = ss(diag(GTO_gain*1.27 ./ diag(C)));
+    sys_GTO = tf(diag(GTO_gain*1.27 ./ diag(C)));
         sys_GTO.InputName = muscle_names;
         sys_GTO.OutputName = muscle_names;
-        sys_GTO.InternalDelay = Aff_Cent_Delays;
+        sys_GTO.IODelay = Aff_Cent_Delays;
 
     %% Close Inner Loop
     sys_closed_inner_loop = feedback(sys_fwd_path,sys_GTO*sys_u2f);
@@ -88,9 +88,9 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
     sys_DeltaLambda2u_fb = tf(G, 1);
         sys_DeltaLambda2u_fb.InputName = muscle_names;
         sys_DeltaLambda2u_fb.OutputName = muscle_names;
-        sys_DeltaLambda2u_fb.InternalDelay = Aff_Cent_Delays;
+        sys_DeltaLambda2u_fb.IODelay = Aff_Cent_Delays;
 
     %% Close Outer Loop
-    sys_u_des_2_u_ma = feedback(sys_closed_inner_loop,sys_DeltaLambda2u_fb*sys_q2DeltaLambda*sys_tau2q*sys_f2tau*sys_f2tau);
+    sys_u_des_2_u_ma = feedback(sys_closed_inner_loop,sys_DeltaLambda2u_fb*sys_q2DeltaLambda*sys_tau2q*sys_f2tau*sys_u2f);
 
 end

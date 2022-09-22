@@ -46,8 +46,8 @@ function [sys_closed, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_g
         sys_u2f_open.InputDelay = EffDelays;
         
     % GTO
-    sys_GTO = ss(diag(GTO_gain*1.27 ./ diag(C))); %  Rozendaal (1997)
-        sys_GTO.InternalDelay = Aff_Cent_Delays;
+    sys_GTO = tf(diag(GTO_gain*1.27 ./ diag(C))); %  Rozendaal (1997)
+        sys_GTO.IODelay = Aff_Cent_Delays;
         sys_GTO.InputName = muscle_names;
         sys_GTO.OutputName = muscle_names;
     
