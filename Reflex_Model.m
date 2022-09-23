@@ -1,21 +1,21 @@
 % "sys_closed" is the full system with feedback.
 % "sys_open" is the full loop path (descending neural commands to spinal afferents) without closing the loop.
 % To create the system without feedback, set all fb_gains to zero and use the "sys_closed" model.
-function [sys_closed, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_gain,delay_multiplier)%,Proximal_Delay,Distal_Delay)
+function [sys_closed, sys_u2u_fb] = Reflex_Model(posture,fb_mult_P,fb_mult_D,GTO_gain,delay_multiplier)%,Proximal_Delay,Distal_Delay)
     addpath('Parameter Matrices')
     
     % Load Moment Arm, Inertia, Damping, Stiffness, Max Muscle Force Matrices, Spindle Gains, and Delays
-    M = csvread(['M', num2str(posture), '.csv']);
-    I = csvread(['I', num2str(posture), '.csv']);
-    D = csvread('D.csv');
-    K = csvread('K.csv');
-    C = csvread('Max Muscle Force.csv');
-    SpindleGains = csvread('Spindle_Gains.csv');
+    M = readmatrix(['M', num2str(posture), '.csv']);
+    I = readmatrix(['I', num2str(posture), '.csv']);
+    D = readmatrix('D.csv');
+    K = readmatrix('K.csv');
+    C = readmatrix('Max Muscle Force.csv');
+    SpindleGains = readmatrix('Spindle_Gains.csv');
 %     SpindleGains = csvread('Spindle_Gains (not symmetric).csv');
 %     SpindleGains = csvread('Spindle_Gains_Calculated.csv');
 %     SpindleGains = csvread('Spindle_Gains_Randomized.csv');
-    AffDelays = csvread('DelaysAfferent.csv') * delay_multiplier;
-    EffDelays = csvread('DelaysEfferent.csv');
+    AffDelays = readmatrix('DelaysAfferent.csv');
+    EffDelays = readmatrix('DelaysEfferent.csv') * delay_multiplier;
     CentDelays = NaN(4);
     for i = 1:4
         for j = 1:4

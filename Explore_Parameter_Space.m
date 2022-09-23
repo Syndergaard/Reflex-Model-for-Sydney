@@ -28,7 +28,7 @@ for i = 1:n
                 delay_mult = delay_multiplier(l);
 
                 % Create sys and get magnitude ratios
-                sys = Full_Model(posture,fb_gain_P,fb_gain_D,GTO_gain,delay_mult);
+                sys = Reflex_Model(posture,fb_gain_P,fb_gain_D,GTO_gain,delay_mult);
                 [mag,phase,wout] = bode(sys,{w_low,w_high});
                 wout = wout/(2*pi);
 
@@ -76,7 +76,7 @@ for i = 2:n
                 delay_mult = delay_multiplier(l);
                 
                 % Create sys and get magnitude ratios
-                sys = Full_Model(posture,fb_gain_P,fb_gain_D,GTO_gain,delay_mult);
+                sys = Reflex_Model(posture,fb_gain_P,fb_gain_D,GTO_gain,delay_mult);
                 [mag,phase,wout] = bode(sys,{w_low,w_high});
                 wout = wout/(2*pi);
 
@@ -114,7 +114,7 @@ peak_mags = NaN([1,1,1,1,2,4]);
 peak_frequencies = NaN([1,1,1,1,2,4]);
 
     % Create sys and get magnitude ratios
-sys = Full_Model(posture,0,0,0,0);
+sys = Reflex_Model(posture,0,0,0,0);
 [mag,phase,wout] = bode(sys,{w_low,w_high});
 wout = wout/(2*pi);
 

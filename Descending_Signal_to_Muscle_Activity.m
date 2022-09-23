@@ -12,8 +12,8 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
 %     SpindleGains = csvread('Spindle_Gains (not symmetric).csv');
 %     SpindleGains = csvread('Spindle_Gains_Calculated.csv');
 %     SpindleGains = csvread('Spindle_Gains_Randomized.csv');
-    AffDelays = readmatrix('DelaysAfferent.csv') * delay_multiplier;
-    EffDelays = readmatrix('DelaysEfferent.csv');
+    AffDelays = readmatrix('DelaysAfferent.csv');
+    EffDelays = readmatrix('DelaysEfferent.csv') * delay_multiplier;
     CentDelays = NaN(4);
     for i = 1:4
         for j = 1:4
@@ -91,6 +91,6 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
         sys_DeltaLambda2u_fb.IODelay = Aff_Cent_Delays;
 
     %% Close Outer Loop
-    sys_u_des_2_u_ma = feedback(sys_closed_inner_loop,sys_DeltaLambda2u_fb*sys_q2DeltaLambda*sys_tau2q*sys_f2tau*sys_u2f);
+    sys_u_des_2_u_ma = feedback(sys_closed_inner_loop, -sys_DeltaLambda2u_fb*sys_q2DeltaLambda*sys_tau2q*sys_f2tau*sys_u2f);
 
 end

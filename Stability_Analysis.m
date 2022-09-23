@@ -6,7 +6,7 @@ delay_multiplier = 1;
 
 Factor_of_Safety = 2;
 
-[~, sys_u2u_fb] = Full_Model(posture,fb_mult_P,fb_mult_D,GTO_gain,delay_multiplier);
+[~, sys_u2u_fb] = Reflex_Model(posture,fb_mult_P,fb_mult_D,GTO_gain,delay_multiplier);
 
 Gm = zeros(4); Pm = zeros(4); Wcg = zeros(4); Wcp = zeros(4);
 for j = 1:4 % j'th input
