@@ -9,22 +9,8 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
     K = readmatrix('K.csv');
     C = readmatrix('Max Muscle Force.csv');
     SpindleGains = readmatrix('Spindle_Gains.csv');
-%     SpindleGains = csvread('Spindle_Gains (not symmetric).csv');
-%     SpindleGains = csvread('Spindle_Gains_Calculated.csv');
-%     SpindleGains = csvread('Spindle_Gains_Randomized.csv');
-    AffDelays = readmatrix('DelaysAfferent.csv');
+    AffDelays = (readmatrix('DelaysAfferent.csv') + 0.00175) * delay_multiplier; % 0.00175 is an average central delay
     EffDelays = readmatrix('DelaysEfferent.csv') * delay_multiplier;
-    CentDelays = NaN(4);
-    for i = 1:4
-        for j = 1:4
-            if SpindleGains(i,j) >= 0
-                CentDelays(i,j) = 0.001;
-            else
-                CentDelays(i,j) = 0.0025;
-            end
-        end
-    end
-    Aff_Cent_Delays = (repmat(AffDelays,1,4) + CentDelays) * delay_multiplier; % Assumes the central delay is small compared to the efferent delay, but allow delays to be zero if delay_multiplier==0.
     muscle_names = {'ECR';'ECU';'FCR';'FCU'};
     joint_DOF_names = {'WFE';'WRUD'};
     
@@ -50,7 +36,7 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
     sys_GTO = tf(diag(GTO_gain*1.27 ./ diag(C)));
         sys_GTO.InputName = muscle_names;
         sys_GTO.OutputName = muscle_names;
-        sys_GTO.IODelay = Aff_Cent_Delays;
+        sys_GTO.OutputDelay = AffDelays;
 
     %% Close Inner Loop
     sys_closed_inner_loop = feedback(sys_fwd_path,sys_GTO*sys_u2f);
@@ -88,7 +74,7 @@ function sys_u_des_2_u_ma = Descending_Signal_to_Muscle_Activity(posture,fb_mult
     sys_DeltaLambda2u_fb = tf(G, 1);
         sys_DeltaLambda2u_fb.InputName = muscle_names;
         sys_DeltaLambda2u_fb.OutputName = muscle_names;
-        sys_DeltaLambda2u_fb.IODelay = Aff_Cent_Delays;
+        sys_DeltaLambda2u_fb.OutputDelay = AffDelays;
 
     %% Close Outer Loop
     sys_u_des_2_u_ma = feedback(sys_closed_inner_loop, -sys_DeltaLambda2u_fb*sys_q2DeltaLambda*sys_tau2q*sys_f2tau*sys_u2f);
